@@ -33,6 +33,9 @@ body.light-bg-base.style-liquid {
   --element-border: 1px solid rgba(0, 0, 0, 0.08);
   --element-shadow:
     inset 1px 1px 0 rgba(255, 255, 255, 0.7), 0px 8px 24px rgba(0, 0, 0, 0.05);
+  --element-backdrop-filter: blur(
+    30px
+  ); /* ★ 修正: Liquidスタイルの効果を追加 */
 }
 body.style-clay {
   --element-border-radius: 24px;
@@ -299,7 +302,7 @@ body.gradient-off::before {
 .chat-bubble {
   max-width: 100%;
   padding: 12px 18px 0.5px;
-  line-height: 1.0;
+  line-height: 1;
   word-wrap: break-word;
   white-space: pre-wrap;
   margin-bottom: 0;
@@ -422,7 +425,7 @@ body.gradient-off::before {
   padding-left: 8px;
 }
 .input-box::placeholder {
-  color: var(--text-color-muted);
+  color: var(--text-color);
 }
 .send-button,
 .input-action-button {
@@ -430,7 +433,7 @@ body.gradient-off::before {
   height: 36px;
   border-radius: 50%;
   border: none;
-  color: white;
+  color: var(--text-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,7 +445,7 @@ body.gradient-off::before {
 
 .input-action-button {
   background: transparent;
-  color: var(--text-color-muted);
+  color: var(--text-color);
 }
 .input-action-button:hover {
   color: var(--text-color);
@@ -550,13 +553,18 @@ body.gradient-off::before {
   visibility: hidden;
   transition: all 0.3s ease;
 }
+
+/* ★★★ ここから設定モーダルのスタイルを修正・追加 ★★★ */
+
 .settings-modal {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
-  width: 340px;
-  padding: 20px;
+  /* ★ 修正: 横幅を広げ、高さを固定 */
+  width: 440px;
+  max-height: 85vh; /* ビューポートの高さの85%を上限に */
+  padding: 0; /* ★ 修正: パディングを削除し、子要素で管理 */
   background: rgba(18, 18, 18, 0.7);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -565,7 +573,11 @@ body.gradient-off::before {
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* ★ 追加: ヘッダーとコンテンツをフレックスボックスで配置 */
+  display: flex;
+  flex-direction: column;
 }
+
 .settings-modal-backdrop.active {
   opacity: 1;
   visibility: visible;
@@ -575,11 +587,34 @@ body.gradient-off::before {
   visibility: visible;
   transform: translate(-50%, -50%) scale(1);
 }
+
 .settings-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* ★ 追加: ヘッダーのパディングとボーダーを再設定 */
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0; /* ヘッダーが縮まないようにする */
 }
+
+/* ★★★ スクロール用ラッパーのスタイル (新規追加) ★★★ */
+.settings-content-wrapper {
+  overflow-y: auto; /* ★ 縦方向にスクロール可能にする */
+  padding: 10px 20px 20px 20px; /* ★ コンテンツ部分のパディング */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.settings-content-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.settings-content-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+/* ★★★ ここまで設定モーダルの修正・追加 ★★★ */
+
 .settings-modal-title {
   font-size: 16px;
   font-weight: bold;
@@ -857,4 +892,47 @@ input:checked + .slider:before {
   animation: blink 1s step-end infinite;
   font-weight: 500;
   margin-left: 2px;
+}
+
+/* ★★★ 以下、これまでの修正で追加したスタイル ★★★ */
+
+/* ドロップダウンメニューのスタイル (テーマ対応版) */
+#fontSelector option,
+#languageSelector option {
+  background-color: #2c2c2c;
+  color: #e2e2e2;
+  border: none;
+  padding: 8px 10px;
+}
+body.light-bg-base #fontSelector option,
+body.light-bg-base #languageSelector option {
+  background-color: #ffffff;
+  color: #222222;
+}
+
+/* ダークテーマ時のLiquid/Clayスタイルのボタンを見やすくする */
+body.dark-bg-base.style-liquid .new-chat-button,
+body.dark-bg-base.style-liquid .settings-button {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+}
+body.dark-bg-base.style-clay .new-chat-button,
+body.dark-bg-base.style-clay .settings-button {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ライトテーマ時のサイドバースタイル（包括的修正） */
+body.light-bg-base .particle-sidebar {
+  background: rgba(242, 242, 242, 0.75);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+body.light-bg-base .sidebar-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+body.light-bg-base .question-item.active {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+body.light-bg-base .question-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
 }
