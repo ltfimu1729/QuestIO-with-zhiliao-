@@ -206,111 +206,117 @@
           </div>
         </div>
 
-        <!-- General Settings -->
-        <div class="general-settings" style="margin-bottom: 20px">
-          <div class="settings-modal-title">General</div>
-          <!-- ★★★ ここからAPIキー入力欄を追加 ★★★ -->
-          <div class="custom-control">
-            <label for="apiKeyInput">API Key</label>
-          </div>
-          <div
-            class="font-input-group"
-            style="margin-top: 5px; margin-bottom: 15px"
-          >
-            <input
-              type="password"
-              id="apiKeyInput"
-              placeholder="Enter your API key..."
-            />
-            <span
-              style="
-                font-size: 11px;
-                color: var(--text-color-muted);
-                margin-top: 4px;
-              "
-              >Your key is stored only in your browser.</span
-            >
-          </div>
-          <!-- ★★★ ここまでAPIキー入力欄を追加 ★★★ -->
-          <div class="custom-control">
-            <label for="languageSelector">Language</label>
-            <select id="languageSelector">
-              <option value="en">English</option>
-              <option value="ja">日本語</option>
-            </select>
-          </div>
-          <div class="custom-control">
-            <label for="streamingToggle">Streaming Response</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="streamingToggle" checked />
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="style-settings">
-          <div class="settings-modal-title">UI Style</div>
-          <div class="style-options" id="styleOptions">
-            <div class="style-option active" data-style="modern">
-              <span>Modern</span>
-            </div>
-            <div class="style-option" data-style="liquid">
-              <span>Liquid</span>
-            </div>
-            <div class="style-option" data-style="clay"><span>Clay</span></div>
-          </div>
-        </div>
-
-        <div class="theme-preset-settings">
-          <div class="settings-modal-title">Theme Presets</div>
-          <div class="theme-preset-options">
-            <button class="theme-preset-btn" id="darkThemeBtn">Dark</button>
-            <button class="theme-preset-btn" id="lightThemeBtn">Light</button>
-          </div>
-        </div>
-
-        <div class="custom-theme-settings">
-          <div class="settings-modal-title">Custom Theme</div>
-          <div class="custom-control">
-            <label for="baseColorPicker">Base Color</label>
-            <input type="color" id="baseColorPicker" value="#111111" />
-          </div>
-          <div class="custom-control">
-            <label for="textColorPicker">Text Color</label>
-            <input type="color" id="textColorPicker" value="#e2e2e2" />
-          </div>
-          <div class="custom-control">
-            <label for="accentColorPicker">Accent / Gradient</label>
-            <input type="color" id="accentColorPicker" value="#00ffff" />
-          </div>
-          <div class="custom-control">
-            <label for="gradientToggle">Gradient BG</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="gradientToggle" checked />
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="font-settings">
+        <!-- ★★★ ここからスクロール用のラッパーを追加 ★★★ -->
+        <div class="settings-content-wrapper">
+          <!-- General Settings -->
+          <div class="general-settings" style="margin-bottom: 20px">
+            <div class="settings-modal-title">General</div>
+            <!-- ★★★ ここからAPIキー入力欄を追加 ★★★ -->
             <div class="custom-control">
-              <label for="fontSelector">Font Preset</label>
-              <select id="fontSelector">
-                <option value="'Inter', sans-serif">Inter</option>
-                <option value="'Poppins', sans-serif">Poppins</option>
-                <option value="'Roboto Mono', monospace">Roboto Mono</option>
+              <label for="apiKeyInput">API Key</label>
+            </div>
+            <div
+              class="font-input-group"
+              style="margin-top: 5px; margin-bottom: 15px"
+            >
+              <input
+                type="password"
+                id="apiKeyInput"
+                placeholder="Enter your API key..."
+              />
+              <span
+                style="
+                  font-size: 11px;
+                  color: var(--text-color-muted);
+                  margin-top: 4px;
+                "
+                >Your key is stored only in your browser.</span
+              >
+            </div>
+            <!-- ★★★ ここまでAPIキー入力欄を追加 ★★★ -->
+            <div class="custom-control">
+              <label for="languageSelector">Language</label>
+              <select id="languageSelector">
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
               </select>
             </div>
-            <div class="font-input-group">
-              <label for="customFontUrl">Google Fonts URL</label>
-              <input
-                type="text"
-                id="customFontUrl"
-                placeholder="Paste Google Fonts URL..."
-              />
-              <button id="applyFontBtn">Apply</button>
+            <div class="custom-control">
+              <label for="streamingToggle">Streaming Response</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="streamingToggle" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="style-settings">
+            <div class="settings-modal-title">UI Style</div>
+            <div class="style-options" id="styleOptions">
+              <div class="style-option active" data-style="modern">
+                <span>Modern</span>
+              </div>
+              <div class="style-option" data-style="liquid">
+                <span>Liquid</span>
+              </div>
+              <div class="style-option" data-style="clay">
+                <span>Clay</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="theme-preset-settings">
+            <div class="settings-modal-title">Theme Presets</div>
+            <div class="theme-preset-options">
+              <button class="theme-preset-btn" id="darkThemeBtn">Dark</button>
+              <button class="theme-preset-btn" id="lightThemeBtn">Light</button>
+            </div>
+          </div>
+
+          <div class="custom-theme-settings">
+            <div class="settings-modal-title">Custom Theme</div>
+            <div class="custom-control">
+              <label for="baseColorPicker">Base Color</label>
+              <input type="color" id="baseColorPicker" value="#111111" />
+            </div>
+            <div class="custom-control">
+              <label for="textColorPicker">Text Color</label>
+              <input type="color" id="textColorPicker" value="#e2e2e2" />
+            </div>
+            <div class="custom-control">
+              <label for="accentColorPicker">Accent / Gradient</label>
+              <input type="color" id="accentColorPicker" value="#00ffff" />
+            </div>
+            <div class="custom-control">
+              <label for="gradientToggle">Gradient BG</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="gradientToggle" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="font-settings">
+              <div class="custom-control">
+                <label for="fontSelector">Font Preset</label>
+                <select id="fontSelector">
+                  <option value="'Inter', sans-serif">Inter</option>
+                  <option value="'Poppins', sans-serif">Poppins</option>
+                  <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                </select>
+              </div>
+              <div class="font-input-group">
+                <label for="customFontUrl">Google Fonts URL</label>
+                <input
+                  type="text"
+                  id="customFontUrl"
+                  placeholder="Paste Google Fonts URL..."
+                />
+                <button id="applyFontBtn">Apply</button>
+              </div>
             </div>
           </div>
         </div>
+        <!-- ★★★ ここまでラッパー ★★★ -->
       </div>
     </div>
 
