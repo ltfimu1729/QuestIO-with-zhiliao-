@@ -1,0 +1,860 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
+
+:root {
+  --bg-color: #111111;
+  --text-color: #e2e2e2;
+  --text-color-muted: rgba(255, 255, 255, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --sidebar-bg: rgba(18, 18, 18, 0.7);
+  --font-main: "Inter", sans-serif;
+  --accent-hue-1: 180;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --element-border-radius: 6px;
+  --element-bg: var(--glass-bg);
+  --element-border: 1px solid var(--glass-border);
+  --element-shadow: none;
+  --element-backdrop-filter: none;
+}
+
+body.light-bg-base.style-modern {
+  --element-border: 1px solid rgba(0, 0, 0, 0.15);
+}
+body.style-liquid {
+  --element-border-radius: 22px;
+  --element-bg: rgba(255, 255, 255, 0.08);
+  --element-border: 1px solid rgba(255, 255, 255, 0.15);
+  --element-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.3);
+  --element-backdrop-filter: blur(30px);
+}
+body.light-bg-base.style-liquid {
+  --element-bg: rgba(0, 0, 0, 0.04);
+  --element-border: 1px solid rgba(0, 0, 0, 0.08);
+  --element-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.7), 0px 8px 24px rgba(0, 0, 0, 0.05);
+}
+body.style-clay {
+  --element-border-radius: 24px;
+  --element-bg: var(--bg-color);
+  --element-border: 1px solid transparent;
+  --element-shadow:
+    8px 8px 16px rgba(0, 0, 0, 0.4), inset -4px -4px 12px rgba(0, 0, 0, 0.3),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.05);
+  --element-backdrop-filter: none;
+}
+body.dark-bg-base.style-clay {
+  --element-border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.light-bg-base.style-clay {
+  --element-shadow:
+    8px 8px 16px rgba(0, 0, 0, 0.1), inset -4px -4px 12px rgba(0, 0, 0, 0.1),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.8);
+}
+
+body.style-clay .new-chat-button:active,
+body.style-clay .settings-button:active,
+body.style-clay .style-option:active {
+  transform: scale(0.95);
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.4),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05);
+}
+body.light-bg-base.style-clay .new-chat-button:active,
+body.light-bg-base.style-clay .settings-button:active,
+body.light-bg-base.style-clay .style-option:active {
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  color: var(--text-color);
+  font-family: var(--font-main);
+  transition:
+    background-color 0.4s,
+    color 0.4s,
+    font-family 0.4s;
+}
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    hsla(var(--accent-hue-1), 70%, 50%, 0.4),
+    hsla(calc(var(--accent-hue-1) + 60), 70%, 50%, 0.4),
+    hsla(calc(var(--accent-hue-1) + 120), 70%, 50%, 0.4)
+  );
+  background-size: 200% 200%;
+  animation: gradient-animation 20s linear infinite;
+  filter: blur(150px);
+  opacity: 0.3;
+  z-index: -1;
+  transition: opacity 0.5s ease;
+}
+@keyframes gradient-animation {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-5%, 5%) rotate(180deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg);
+  }
+}
+body.gradient-off::before {
+  opacity: 0;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+.particle-sidebar {
+  width: 280px;
+  height: 100vh;
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(25px);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.app-container.sidebar-collapsed .particle-sidebar {
+  margin-left: -280px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+.sidebar-title {
+  font-size: 20px;
+  font-weight: bold;
+  user-select: none;
+}
+.sidebar-controls {
+  display: flex;
+  gap: 8px;
+}
+.chat-view {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.hamburger-menu {
+  position: fixed;
+  top: 25px;
+  left: calc(280px + 25px);
+  width: 24px;
+  height: 18px;
+  z-index: 100;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.app-container.sidebar-collapsed .hamburger-menu {
+  left: 25px;
+}
+
+.hamburger-menu span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-color);
+  border-radius: 3px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.hamburger-menu.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.hamburger-menu.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger-menu.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+.chat-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 24px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+/* ★★★ 修正: Firefox向けスクロールバーのスタイルを追加 ★★★ */
+.chat-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.chat-container::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+.title-container {
+  text-align: center;
+  padding: 40px;
+  transition: all 0.5s ease;
+  user-select: none;
+}
+.title-container.conversation-started {
+  display: none;
+}
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+.special-o {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.special-o:hover {
+  filter: brightness(1.5);
+}
+
+.new-chat-button,
+.settings-button,
+.chat-bubble,
+.input-container,
+.style-option {
+  transition:
+    background-color 0.4s ease,
+    border 0.4s ease,
+    border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s ease,
+    backdrop-filter 0.4s ease,
+    transform 0.2s ease;
+  background-color: var(--element-bg);
+  border: var(--element-border);
+  border-radius: var(--element-border-radius);
+  box-shadow: var(--element-shadow);
+  backdrop-filter: var(--element-backdrop-filter);
+}
+.new-chat-button,
+.settings-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--text-color);
+}
+.new-chat-button:hover,
+.settings-button:hover {
+  transform: scale(1.1) rotate(90deg);
+  filter: brightness(1.2);
+}
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: bubble-fade-in 0.4s ease forwards;
+}
+.message-wrapper.user-message {
+  align-items: flex-end;
+}
+.message-wrapper.ai-message {
+  align-items: flex-start;
+}
+
+.chat-bubble {
+  max-width: 100%;
+  padding: 12px 18px 0.5px;
+  line-height: 1.0;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  margin-bottom: 0;
+}
+@keyframes bubble-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: all 0.2s ease-out;
+}
+.message-wrapper:hover .message-actions {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.message-action-btn {
+  width: 30px;
+  height: 30px;
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border); /* 修正: 透過でなく、明示的に */
+  border-radius: 8px;
+  color: var(--text-color-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.message-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-color);
+  transform: scale(1.1);
+}
+.message-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+/* ★★★ ここから新規スタイルを追加 ★★★ */
+
+/* メッセージ編集用のUI */
+.edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--glass-border) !important; /* !importantで他のスタイルを上書き */
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit; /* inheritでフォントを親要素に合わせる */
+  font-size: 1em;
+  line-height: 1.5;
+  outline: none;
+}
+.edit-textarea:focus {
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8) !important;
+  box-shadow: 0 0 8px hsla(var(--accent-hue-1), 70%, 50%, 0.4);
+}
+.message-action-btn.edit-save-btn,
+.message-action-btn.edit-cancel-btn {
+  width: auto; /* テキストが入るように幅を自動調整 */
+  padding: 0 12px;
+  flex-grow: 1; /* ボタンが利用可能なスペースを均等に埋める */
+}
+.message-action-btn.edit-save-btn {
+  background-color: hsla(var(--accent-hue-1), 70%, 40%, 0.3);
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.5);
+  color: var(--text-color);
+}
+
+/* ★★★ ここまで新規スタイルを追加 ★★★ */
+
+.input-area {
+  padding: 24px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.input-container:focus-within {
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8) !important;
+  box-shadow:
+    var(--element-shadow),
+    0 0 15px hsla(var(--accent-hue-1), 70%, 50%, 0.4);
+}
+
+.input-box {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  font-family: var(--font-main);
+  font-size: 16px;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 8px;
+}
+.input-box::placeholder {
+  color: var(--text-color-muted);
+}
+.send-button,
+.input-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.input-action-button {
+  background: transparent;
+  color: var(--text-color-muted);
+}
+.input-action-button:hover {
+  color: var(--text-color);
+  background-color: var(--glass-bg);
+}
+
+/* ★★★ 音声入力中のスタイルを追加 ★★★ */
+.input-action-button#voiceInputButton.active {
+  color: hsla(var(--accent-hue-1), 80%, 60%, 1);
+  animation: pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--accent-hue-1), 70%, 50%, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px hsla(var(--accent-hue-1), 70%, 50%, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsla(var(--accent-hue-1), 70%, 50%, 0);
+  }
+}
+/* ★★★ ここまで新規スタイルを追加 ★★★ */
+
+.send-button {
+  background: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+}
+.send-button:hover {
+  filter: brightness(1.2);
+}
+.send-button:disabled {
+  background: var(--glass-border);
+  cursor: not-allowed;
+}
+
+.question-item {
+  background: transparent;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.question-item:hover {
+  background-color: var(--glass-bg);
+}
+.question-item.active {
+  background-color: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+.chat-bubble > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.ai-bubble a {
+  color: hsla(var(--accent-hue-1), 80%, 60%, 1);
+  text-decoration: none;
+}
+.ai-bubble a:hover {
+  text-decoration: underline;
+}
+.ai-bubble pre {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 1em 0;
+  overflow-x: auto;
+  position: relative;
+}
+.copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #333;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+.copy-button:hover {
+  opacity: 1;
+  background: #444;
+}
+
+.settings-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.settings-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 340px;
+  padding: 20px;
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.settings-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+.settings-modal-backdrop.active .settings-modal {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.settings-modal-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e2e2e2;
+  margin-bottom: 10px;
+}
+.settings-modal-close {
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: 0.2s ease;
+  color: #e2e2e2;
+}
+.settings-modal-close:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
+.style-settings {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+.style-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.style-option {
+  height: 50px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.style-option:hover,
+.style-option.active {
+  border-color: #e2e2e2;
+}
+.style-option span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e2e2;
+  user-select: none;
+}
+.style-option[data-style="liquid"] {
+  backdrop-filter: blur(5px);
+}
+.style-option[data-style="clay"] {
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+  border-color: transparent;
+}
+
+.theme-preset-settings {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 20px;
+}
+.theme-preset-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.theme-preset-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e2e2;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: var(--font-main);
+  transition: all 0.2s ease;
+}
+.theme-preset-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #e2e2e2;
+}
+.theme-preset-btn:active {
+  transform: scale(0.95);
+}
+
+.custom-theme-settings {
+  margin-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 20px;
+}
+.custom-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+.custom-control label {
+  font-size: 14px;
+  color: #e2e2e2;
+}
+.custom-control input[type="color"] {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 3px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+}
+.custom-control input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.custom-control input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+.custom-control .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  justify-self: end;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: 0.4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+#fontSelector,
+#languageSelector {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e2e2e2;
+  justify-self: end;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-family: var(--font-main);
+}
+
+.font-settings {
+  margin-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 15px;
+}
+.font-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+.font-input-group label {
+  font-size: 14px;
+  color: #e2e2e2;
+}
+.font-input-group input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e2e2e2;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.font-input-group button {
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.font-input-group button:hover {
+  background-color: hsla(var(--accent-hue-1), 70%, 60%, 1);
+}
+
+/* ----- ここから会話UIの追加スタイル ----- */
+
+/* ユーザー（自分）の吹き出しスタイル */
+.user-bubble {
+  border-radius: 20px 20px 2px 20px;
+  transform: translateX(0);
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.1);
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.3);
+}
+
+/* AIの吹き出しスタイル */
+.ai-bubble {
+  border-radius: 20px 20px 20px 2px;
+  transform: translateX(0);
+}
+
+/* --- AI回答生成中のタイピングアニメーション --- */
+
+@keyframes typing-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+}
+
+.ai-bubble .typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+}
+
+.ai-bubble .typing-indicator::before,
+.ai-bubble .typing-indicator::after {
+  content: "•";
+  margin: 0 3px;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-color-muted);
+  animation: typing-bounce 1.4s infinite;
+  -webkit-animation: typing-bounce 1.4s infinite;
+}
+
+.ai-bubble .typing-indicator::before {
+  animation-delay: 0.2s;
+}
+
+.ai-bubble .typing-indicator::after {
+  animation-delay: 0.4s;
+}
+
+.typing-indicator {
+  color: transparent;
+}
+
+/* --- AIストリーミング中のカーソルアニメーション --- */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.typing-cursor {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+  font-weight: 500;
+  margin-left: 2px;
+}
