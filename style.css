@@ -33,9 +33,7 @@ body.light-bg-base.style-liquid {
   --element-border: 1px solid rgba(0, 0, 0, 0.08);
   --element-shadow:
     inset 1px 1px 0 rgba(255, 255, 255, 0.7), 0px 8px 24px rgba(0, 0, 0, 0.05);
-  --element-backdrop-filter: blur(
-    30px
-  ); /* ★ 修正: Liquidスタイルの効果を追加 */
+  --element-backdrop-filter: blur(30px);
 }
 body.style-clay {
   --element-border-radius: 24px;
@@ -131,8 +129,9 @@ body.gradient-off::before {
   display: flex;
   height: 100vh;
 }
+
 .particle-sidebar {
-  width: 280px;
+  width: var(--sidebar-left-width, 280px);
   height: 100vh;
   background: rgba(18, 18, 18, 0.7);
   backdrop-filter: blur(25px);
@@ -144,7 +143,7 @@ body.gradient-off::before {
   flex-shrink: 0;
 }
 .app-container.sidebar-collapsed .particle-sidebar {
-  margin-left: -280px;
+  margin-left: calc(-1 * var(--sidebar-left-width, 280px));
 }
 
 .sidebar-header {
@@ -169,33 +168,47 @@ body.gradient-off::before {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  position: relative;
 }
 
 .hamburger-menu {
   position: fixed;
-  top: 25px;
-  left: calc(280px + 25px);
-  width: 24px;
-  height: 18px;
+  top: 60px;
+  left: var(--sidebar-left-width, 280px);
+  width: 40px;
+  height: 48px;
   z-index: 100;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
   transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: col-resize;
+
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  padding-left: 5px;
 }
+
 .app-container.sidebar-collapsed .hamburger-menu {
-  left: 25px;
+  left: 0;
+  border-left: 1px solid var(--glass-border);
 }
 
 .hamburger-menu span {
   display: block;
-  width: 100%;
+  width: 20px;
   height: 2px;
   background-color: var(--text-color);
   border-radius: 3px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
 .hamburger-menu.active span:nth-child(1) {
   transform: translateY(8px) rotate(45deg);
 }
@@ -210,12 +223,9 @@ body.gradient-off::before {
   overflow-y: auto;
   padding: 24px;
   width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
-/* ★★★ 修正: Firefox向けスクロールバーのスタイルを追加 ★★★ */
 .chat-container {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
@@ -252,7 +262,7 @@ body.gradient-off::before {
 .new-chat-button,
 .settings-button,
 .chat-bubble,
-.input-container,
+.input-wrapper,
 .style-option {
   transition:
     background-color 0.4s ease,
@@ -294,6 +304,7 @@ body.gradient-off::before {
 }
 .message-wrapper.user-message {
   align-items: flex-end;
+  gap: 8px;
 }
 .message-wrapper.ai-message {
   align-items: flex-start;
@@ -301,7 +312,7 @@ body.gradient-off::before {
 
 .chat-bubble {
   max-width: 100%;
-  padding: 12px 18px 0.5px;
+  padding: 20px 20px 5px;
   line-height: 1;
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -332,7 +343,7 @@ body.gradient-off::before {
   width: 30px;
   height: 30px;
   background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border); /* 修正: 透過でなく、明示的に */
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   color: var(--text-color-muted);
   cursor: pointer;
@@ -351,19 +362,17 @@ body.gradient-off::before {
   width: 16px;
   height: 16px;
 }
-/* ★★★ ここから新規スタイルを追加 ★★★ */
 
-/* メッセージ編集用のUI */
 .edit-textarea {
   width: 100%;
   min-height: 80px;
   resize: vertical;
   background: transparent;
   color: var(--text-color);
-  border: 1px solid var(--glass-border) !important; /* !importantで他のスタイルを上書き */
+  border: 1px solid var(--glass-border) !important;
   border-radius: 6px;
   padding: 8px;
-  font-family: inherit; /* inheritでフォントを親要素に合わせる */
+  font-family: inherit;
   font-size: 1em;
   line-height: 1.5;
   outline: none;
@@ -374,9 +383,9 @@ body.gradient-off::before {
 }
 .message-action-btn.edit-save-btn,
 .message-action-btn.edit-cancel-btn {
-  width: auto; /* テキストが入るように幅を自動調整 */
+  width: auto;
   padding: 0 12px;
-  flex-grow: 1; /* ボタンが利用可能なスペースを均等に埋める */
+  flex-grow: 1;
 }
 .message-action-btn.edit-save-btn {
   background-color: hsla(var(--accent-hue-1), 70%, 40%, 0.3);
@@ -384,15 +393,24 @@ body.gradient-off::before {
   color: var(--text-color);
 }
 
-/* ★★★ ここまで新規スタイルを追加 ★★★ */
-
 .input-area {
   padding: 24px;
   width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
   flex-shrink: 0;
 }
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper:focus-within {
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8) !important;
+  box-shadow:
+    var(--element-shadow),
+    0 0 15px hsla(var(--accent-hue-1), 70%, 50%, 0.4);
+}
+
 .input-container {
   position: relative;
   display: flex;
@@ -401,11 +419,47 @@ body.gradient-off::before {
   gap: 8px;
 }
 
-.input-container:focus-within {
-  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8) !important;
-  box-shadow:
-    var(--element-shadow),
-    0 0 15px hsla(var(--accent-hue-1), 70%, 50%, 0.4);
+#attachedFileDisplay {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.attached-file-item {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  background-color: var(--glass-bg);
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: var(--text-color);
+}
+
+.attached-file-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+  max-width: 150px;
+}
+
+.remove-file-button {
+  background: none;
+  border: none;
+  color: var(--text-color-muted);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+.remove-file-button:hover {
+  color: var(--text-color);
 }
 
 .input-box {
@@ -452,7 +506,6 @@ body.gradient-off::before {
   background-color: var(--glass-bg);
 }
 
-/* ★★★ 音声入力中のスタイルを追加 ★★★ */
 .input-action-button#voiceInputButton.active {
   color: hsla(var(--accent-hue-1), 80%, 60%, 1);
   animation: pulse-glow 1.5s infinite;
@@ -469,7 +522,6 @@ body.gradient-off::before {
     box-shadow: 0 0 0 0 hsla(var(--accent-hue-1), 70%, 50%, 0);
   }
 }
-/* ★★★ ここまで新規スタイルを追加 ★★★ */
 
 .send-button {
   background: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
@@ -483,24 +535,35 @@ body.gradient-off::before {
 }
 
 .question-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
   background: transparent;
   border-radius: 8px;
   padding: 12px 15px;
+  padding-right: 8px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   border: 1px solid transparent;
+  transition:
+    background-color 0.2s ease,
+    border-top 0.2s ease,
+    border-bottom 0.2s ease;
 }
+
 .question-item:hover {
   background-color: var(--glass-bg);
 }
+
 .question-item.active {
   background-color: var(--glass-bg);
   border-color: var(--glass-border);
 }
+
 .chat-bubble > * {
   margin-top: 0;
   margin-bottom: 0;
@@ -554,17 +617,14 @@ body.gradient-off::before {
   transition: all 0.3s ease;
 }
 
-/* ★★★ ここから設定モーダルのスタイルを修正・追加 ★★★ */
-
 .settings-modal {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
-  /* ★ 修正: 横幅を広げ、高さを固定 */
   width: 440px;
-  max-height: 85vh; /* ビューポートの高さの85%を上限に */
-  padding: 0; /* ★ 修正: パディングを削除し、子要素で管理 */
+  max-height: 85vh;
+  padding: 0;
   background: rgba(18, 18, 18, 0.7);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -573,7 +633,6 @@ body.gradient-off::before {
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* ★ 追加: ヘッダーとコンテンツをフレックスボックスで配置 */
   display: flex;
   flex-direction: column;
 }
@@ -592,16 +651,14 @@ body.gradient-off::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* ★ 追加: ヘッダーのパディングとボーダーを再設定 */
   padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  flex-shrink: 0; /* ヘッダーが縮まないようにする */
+  flex-shrink: 0;
 }
 
-/* ★★★ スクロール用ラッパーのスタイル (新規追加) ★★★ */
 .settings-content-wrapper {
-  overflow-y: auto; /* ★ 縦方向にスクロール可能にする */
-  padding: 10px 20px 20px 20px; /* ★ コンテンツ部分のパディング */
+  overflow-y: auto;
+  padding: 10px 20px 20px 20px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
@@ -612,8 +669,6 @@ body.gradient-off::before {
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 6px;
 }
-
-/* ★★★ ここまで設定モーダルの修正・追加 ★★★ */
 
 .settings-modal-title {
   font-size: 16px;
@@ -821,9 +876,6 @@ input:checked + .slider:before {
   background-color: hsla(var(--accent-hue-1), 70%, 60%, 1);
 }
 
-/* ----- ここから会話UIの追加スタイル ----- */
-
-/* ユーザー（自分）の吹き出しスタイル */
 .user-bubble {
   border-radius: 20px 20px 2px 20px;
   transform: translateX(0);
@@ -831,13 +883,11 @@ input:checked + .slider:before {
   border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.3);
 }
 
-/* AIの吹き出しスタイル */
-.ai-bubble {
+.ai-bubble,
+.assistant-bubble {
   border-radius: 20px 20px 20px 2px;
   transform: translateX(0);
 }
-
-/* --- AI回答生成中のタイピングアニメーション --- */
 
 @keyframes typing-bounce {
   0%,
@@ -880,7 +930,6 @@ input:checked + .slider:before {
   color: transparent;
 }
 
-/* --- AIストリーミング中のカーソルアニメーション --- */
 @keyframes blink {
   50% {
     opacity: 0;
@@ -894,9 +943,6 @@ input:checked + .slider:before {
   margin-left: 2px;
 }
 
-/* ★★★ 以下、これまでの修正で追加したスタイル ★★★ */
-
-/* ドロップダウンメニューのスタイル (テーマ対応版) */
 #fontSelector option,
 #languageSelector option {
   background-color: #2c2c2c;
@@ -910,7 +956,6 @@ body.light-bg-base #languageSelector option {
   color: #222222;
 }
 
-/* ダークテーマ時のLiquid/Clayスタイルのボタンを見やすくする */
 body.dark-bg-base.style-liquid .new-chat-button,
 body.dark-bg-base.style-liquid .settings-button {
   background-color: rgba(255, 255, 255, 0.12);
@@ -921,7 +966,6 @@ body.dark-bg-base.style-clay .settings-button {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* ライトテーマ時のサイドバースタイル（包括的修正） */
 body.light-bg-base .particle-sidebar {
   background: rgba(242, 242, 242, 0.75);
   border-right: 1px solid rgba(0, 0, 0, 0.12);
@@ -935,4 +979,813 @@ body.light-bg-base .question-item.active {
 }
 body.light-bg-base .question-item:hover {
   background-color: rgba(0, 0, 0, 0.04);
+}
+
+.file-attachment-bubble {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #333;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: fit-content;
+  max-width: 350px;
+}
+
+.file-attachment-bubble svg {
+  color: #b9bbbe;
+  flex-shrink: 0;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-name {
+  color: #00a8fc;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-type {
+  font-size: 12px;
+  color: #b9bbbe;
+}
+
+.chat-bubble.is-html-content {
+  padding: 0;
+  line-height: normal;
+  background-color: transparent;
+  border: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.message-wrapper:has(.file-attachment-bubble) {
+  margin-bottom: 4px;
+}
+
+.search-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--text-color);
+  transition:
+    background-color 0.4s ease,
+    border 0.4s ease,
+    border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s ease,
+    backdrop-filter 0.4s ease,
+    transform 0.2s ease;
+  background-color: var(--element-bg);
+  border: var(--element-border);
+  border-radius: var(--element-border-radius);
+  box-shadow: var(--element-shadow);
+  backdrop-filter: var(--element-backdrop-filter);
+  -webkit-border-radius: var(--element-border-radius);
+  -moz-border-radius: var(--element-border-radius);
+  -ms-border-radius: var(--element-border-radius);
+  -o-border-radius: var(--element-border-radius);
+}
+
+.search-button:hover {
+  transform: scale(1.1) rotate(90deg);
+  filter: brightness(1.2);
+  -webkit-transform: scale(1.1) rotate(90deg);
+  -moz-transform: scale(1.1) rotate(90deg);
+  -ms-transform: scale(1.1) rotate(90deg);
+  -o-transform: scale(1.1) rotate(90deg);
+}
+
+body.style-clay .search-button:active {
+  transform: scale(0.95);
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.4),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05);
+}
+body.light-bg-base.style-clay .search-button:active {
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.search-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 90;
+  background-color: rgba(var(--bg-color-rgb, 18, 18, 18), 0.7);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-view.active {
+  opacity: 1;
+  visibility: visible;
+}
+body {
+  --bg-color-rgb: 18, 18, 18;
+}
+body.light-bg-base {
+  --bg-color-rgb: 240, 240, 240;
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  padding: 60px 24px 20px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+
+#searchInput {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-family: var(--font-main);
+}
+
+#searchInput::placeholder {
+  color: var(--text-color-muted);
+}
+
+.search-close-button {
+  color: var(--text-color-muted);
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 10px;
+}
+.search-close-button:hover {
+  color: var(--text-color);
+  transform: scale(1.2);
+}
+
+.search-results-container {
+  overflow-y: auto;
+  padding: 16px 24px;
+  flex-grow: 1;
+}
+
+.search-result-item {
+  padding: 14px;
+  margin-bottom: 8px;
+  border-radius: var(--element-border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.search-result-item:hover {
+  background-color: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+
+.search-no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-color-muted);
+  font-size: 1rem;
+}
+
+.search-results-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.search-results-container::-webkit-scrollbar {
+  width: 6px;
+}
+.search-results-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+.question-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding-right: 8px;
+}
+
+.conversation-title {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 10px;
+}
+
+.conversation-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+  flex-shrink: 0;
+}
+
+.question-item:hover .conversation-actions,
+.question-item.active .conversation-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.folder-header:hover .conversation-actions {
+  opacity: 1;
+  visibility: visible;
+}
+.conv-action-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-color-muted);
+  background-color: transparent;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.conv-action-btn:hover {
+  background-color: var(--glass-bg);
+  color: var(--text-color);
+}
+
+.conv-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.conv-action-btn.pin-btn.pinned svg {
+  color: var(--text-color);
+  fill: currentColor;
+}
+
+.question-item.pinned {
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.05);
+  border-left: 2px solid hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+  padding-left: 13px;
+}
+body.light-bg-base .question-item.pinned {
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.1);
+}
+
+.questions-container .pinned + .question-item:not(.pinned) {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.title-edit-input {
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 3px 6px;
+  outline: none;
+  flex-grow: 1;
+}
+
+.title-edit-input:focus {
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+}
+
+.question-item.editing .conversation-title {
+  display: none;
+}
+
+.conversation-actions {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.actions-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  min-width: 180px;
+  background: var(--sidebar-bg, rgba(28, 28, 28, 0.8));
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.2s ease-out;
+}
+
+.conversation-actions.menu-open .actions-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.dropdown-item:hover {
+  background-color: var(--glass-bg);
+}
+
+.dropdown-item.delete-action:hover {
+  background-color: rgba(255, 80, 80, 0.2);
+  color: #ffcccc;
+}
+
+.dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.conv-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.question-item:has(.conversation-actions.menu-open) {
+  overflow: visible;
+  z-index: 5;
+}
+
+.folder-container {
+  margin-bottom: 5px;
+}
+
+.folder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  padding-right: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.folder-header:hover {
+  background-color: var(--glass-bg);
+}
+
+.folder-toggle-icon {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.folder-container.collapsed .folder-toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.folder-name {
+  font-weight: 500;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-content {
+  max-height: 1000px;
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease-out,
+    padding-top 0.3s ease-out,
+    padding-bottom 0.3s ease-out;
+  padding-left: 20px;
+  padding-top: 5px;
+}
+
+.folder-container.collapsed .folder-content {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.folder-content .question-item {
+  padding-left: 25px;
+}
+
+.folder-header.drag-over {
+  background-color: hsla(var(--accent-hue-1), 70%, 50%, 0.2);
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.5);
+}
+
+.folder-separator {
+  border: none;
+  height: 1px;
+  background-color: var(--glass-border);
+  margin: 10px 0;
+}
+
+.question-item.dragging {
+  opacity: 0.6;
+  background: var(--glass-bg);
+  border: 2px dashed var(--glass-border);
+  color: transparent;
+}
+.question-item.dragging > * {
+  visibility: hidden;
+}
+
+.folder-content:has(.conversation-actions.menu-open) {
+  overflow: visible;
+}
+
+.folder-container:has(.conversation-actions.menu-open) {
+  position: relative;
+  z-index: 15;
+}
+
+.question-item.drop-target-before {
+  border-top: 3px solid hsla(var(--accent-hue-1), 70%, 60%, 0.9);
+}
+
+.question-item.drop-target-after {
+  border-bottom: 10px solid hsla(var(--accent-hue-1), 70%, 60%, 0.9);
+}
+
+.folder-header.editing .folder-name {
+  display: none;
+}
+.folder-header.editing .folder-toggle-icon {
+  display: none;
+}
+.folder-header .title-edit-input {
+  flex-grow: 1;
+}
+
+.folder-info-wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.sidebar-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+
+.sidebar-action-button {
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+
+  color: var(--text-color);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-action-button:hover {
+  background-color: var(--glass-bg);
+}
+
+.sidebar-action-button svg {
+  flex-shrink: 0;
+}
+
+body.light-bg-base .sidebar-action-buttons {
+  border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+body.light-bg-base .sidebar-action-button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.settings-modal {
+  --modal-bg: rgba(40, 40, 40, 0.85);
+  --modal-text: #e2e2e2;
+  --modal-border: rgba(255, 255, 255, 0.15);
+  --modal-glass-bg: rgba(255, 255, 255, 0.07);
+  --modal-hover-bg: rgba(255, 255, 255, 0.12);
+
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  color: var(--modal-text);
+}
+
+.settings-header,
+.custom-theme-settings,
+.theme-preset-settings,
+.font-settings {
+  border-color: var(--modal-border);
+}
+
+.settings-modal-title,
+.settings-modal-close,
+.custom-control label {
+  color: var(--modal-text);
+}
+
+.settings-modal .style-option {
+  background-color: var(--modal-glass-bg);
+  border: 2px solid var(--modal-border);
+  color: var(--modal-text);
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+
+.settings-modal .style-option:hover,
+.settings-modal .style-option.active {
+  border-color: var(--modal-text);
+  background-color: var(--modal-hover-bg);
+}
+
+.settings-modal .style-option[data-style="clay"] {
+  box-shadow: none;
+  border-color: var(--modal-border);
+}
+
+.settings-modal .theme-preset-btn,
+.settings-modal #fontSelector,
+.settings-modal #languageSelector,
+.settings-modal .font-input-group input {
+  background-color: var(--modal-glass-bg);
+  border: 1px solid var(--modal-border);
+  color: var(--modal-text);
+}
+
+.settings-modal .theme-preset-btn:hover {
+  background-color: var(--modal-hover-bg);
+  border-color: var(--modal-text);
+}
+
+.settings-modal .slider {
+  background-color: var(--modal-glass-bg);
+  border: 1px solid var(--modal-border);
+}
+
+.settings-modal input[type="color"] {
+  border-color: var(--modal-border);
+}
+
+.conv-settings-menu-button {
+  position: fixed;
+  top: 60px;
+  right: var(--sidebar-right-width, 300px);
+  width: 40px;
+  height: 48px;
+  z-index: 100;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: col-resize;
+
+  background-color: var(--sidebar-bg);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  color: var(--text-color);
+  box-shadow: none;
+}
+
+.conv-settings-menu-button:hover {
+  transform: none;
+  filter: brightness(1.2);
+}
+
+.app-container:not(.right-sidebar-active) .conv-settings-menu-button {
+  right: 0;
+  border-right: 1px solid var(--glass-border);
+}
+
+.right-sidebar {
+  width: var(--sidebar-right-width, 300px);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(25px);
+  border-left: 1px solid var(--glass-border);
+  transition: margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-right: calc(-1 * var(--sidebar-right-width, 300px));
+}
+
+.app-container.right-sidebar-active .right-sidebar {
+  margin-right: 0;
+}
+
+body.light-bg-base .right-sidebar {
+  background: rgba(242, 242, 242, 0.75);
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.right-sidebar-content {
+  overflow-y: auto;
+  padding: 20px;
+  flex-grow: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.right-sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+.right-sidebar-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+.right-sidebar .settings-group {
+  margin-bottom: 30px;
+}
+.right-sidebar .settings-modal-title {
+  margin-bottom: 15px;
+}
+
+.system-prompt-textarea {
+  width: 100%;
+  resize: vertical;
+  background-color: var(--glass-bg);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--element-border-radius);
+  padding: 10px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+.system-prompt-textarea:focus {
+  border-color: hsla(var(--accent-hue-1), 70%, 50%, 0.8);
+}
+
+.right-sidebar #aiModelSelector {
+  width: 100%;
+  background-color: var(--glass-bg);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: var(--font-main);
+}
+.right-sidebar #aiModelSelector option {
+  background-color: #2c2c2c;
+  color: var(--text-color);
+}
+body.light-bg-base .right-sidebar #aiModelSelector option {
+  background-color: #ffffff;
+  color: #222222;
+}
+
+.parameter-control {
+  margin-bottom: 20px;
+}
+.parameter-control .custom-control {
+  margin-bottom: 8px;
+}
+.parameter-control label {
+  font-size: 14px;
+}
+.parameter-control span {
+  font-size: 14px;
+  font-family: "Roboto Mono", monospace;
+  color: var(--text-color-muted);
+}
+
+.parameter-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--glass-bg);
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  border-radius: 3px;
+  border: 1px solid var(--glass-border);
+}
+
+.parameter-slider:hover {
+  opacity: 1;
+}
+
+.parameter-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--text-color);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid var(--bg-color);
+}
+
+.parameter-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--text-color);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid var(--bg-color);
+}
+
+body.light-bg-base .hamburger-menu,
+body.light-bg-base .conv-settings-menu-button {
+  background: rgba(242, 242, 242, 0.75);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-bg-base .hamburger-menu {
+  border-left: none;
+}
+body.light-bg-base .conv-settings-menu-button {
+  border-right: none;
+}
+
+body.light-bg-base .app-container.sidebar-collapsed .hamburger-menu {
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+body.light-bg-base
+  .app-container:not(.right-sidebar-active)
+  .conv-settings-menu-button {
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body.is-resizing {
+  user-select: none;
 }
