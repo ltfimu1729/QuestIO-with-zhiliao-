@@ -32,6 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./QuestIO-with-zhiliao- # 👈 これを追加
 
       - name: Build project
         run: npm run build
+        working-directory: ./QuestIO-with-zhiliao- # 👈 これも追加
