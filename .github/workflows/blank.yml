@@ -1,22 +1,15 @@
-# ワークフローの名前
 name: Deploy static content to Pages
 
-# ワークフローが実行されるトリガー
 on:
-  # mainブランチにpushされたときに実行
   push:
     branches: ["main", "master"]
-
-  # 手動でこのワークフローを実行できるようにする
   workflow_dispatch:
 
-# デプロイに必要な権限を設定
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 1つのジョブでチェックアウトからデプロイまでをすべて行う
 jobs:
   deploy:
     environment:
@@ -24,23 +17,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      # ステップ1: リポジトリのコードをチェックアウトする
       - name: Checkout
         uses: actions/checkout@v4
-
-      # ステップ2: GitHub Pages用のアーティファクトを設定する
       - name: Setup Pages
         uses: actions/configure-pages@v4
-
-      # ステップ3: 静的ファイル（HTML, CSS, JS）をアーティファクトとしてアップロードする
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # '.' はリポジトリのルートディレクトリ全体を意味します。
-          # これにより index.html, style.css, script.js がすべてアップロードされます。
           path: '.'
-
-      # ステップ4: アップロードしたアーティファクトをGitHub Pagesにデプロイする
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
