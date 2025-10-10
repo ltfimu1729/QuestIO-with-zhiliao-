@@ -1,39 +1,87 @@
-# ワークフローの名前
-name: Build and Deploy
+# ワークフローの名前 (GitHubのActionsタブに表示されます)
+name: Build and Deploy to GitHub Pages
 
-# ワークフローのトリガー
+# ワークフローが実行されるトリガーを定義
 on:
-  # mainブランチへのpush時に実行
+  # mainブランチにpushされたときに実行
   push:
     branches:
       - main
+      - master # リポジトリによってはmasterの場合もある
   
-  # mainブランチへのプルリクエスト時に実行
-  pull_request:
-    branches:
-      - main
-
-  # 手動で実行できるようにする
+  # 手動でこのワークフローを実行できるようにする
   workflow_dispatch:
 
-# 実行されるジョブ
+# ジョブの定義
 jobs:
+  # 'build'という名前のジョブ
   build:
+    # ジョブを実行する仮想環境の種類を指定
     runs-on: ubuntu-latest
 
+    # ジョブ内のステップを定義
     steps:
+      # ステップ1: リポジトリのコードをチェックアウトする
+      # これにより、ワークフローはあなたのコードにアクセスできるようになります
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ステップ2: Node.js環境をセットアップする
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+          # 使用するNode.jsのバージョンを指定
           node-version: '20'
+          # npmの依存関係をキャッシュして、次回以降の実行を高速化
+          cache: 'npm'
 
+      # ステップ3: 依存関係をインストールする
+      # 'npm ci' は package-lock.json に基づいてクリーンインストールするため、CI環境で推奨されます
       - name: Install dependencies
-        run: npm install
-        working-directory: ./QuestIO-with-zhiliao- # 👈 これを追加
+        run: npm ci
 
+      # ステップ4: プロジェクトをビルドする
+      # package.jsonの"scripts"にある"build"コマンドを実行します
       - name: Build project
         run: npm run build
-        working-directory: ./QuestIO-with-zhiliao- # 👈 これも追加
+
+      # ステップ5: デプロイ用のアーティファクトを設定する
+      # ビルド成果物をGitHub Pagesがデプロイできるように準備します
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      # ステップ6: ビルド成果物をアーティファクトとしてアップロードする
+      # 'deploy'ジョブがこのアーティファクトを使用します
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # ここにビルド成果物が出力されるフォルダを指定します。
+          # Create React Appなどでは 'build'、ViteやVue CLIなどでは 'dist' が一般的です。
+          # あなたのプロジェクトに合わせて変更してください。
+          path: './build'
+
+  # 'deploy'という名前のジョブ
+  deploy:
+    # 'build'ジョブが成功した後にのみ実行されるようにする
+    needs: build
+
+    # デプロイに必要な権限をジョブに付与する
+    permissions:
+      pages: write      # GitHub Pagesへの書き込みを許可
+      id-token: write   # OpenID Connectトークンの発行を許可
+
+    # デプロイ先の環境情報を設定
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # ジョブを実行する仮想環境の種類を指定
+    runs-on: ubuntu-latest
+
+    # ジョブ内のステップを定義
+    steps:
+      # ステップ1: GitHub Pagesにデプロイする
+      # 'build'ジョブでアップロードされたアーティファクトを取得してデプロイします
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
