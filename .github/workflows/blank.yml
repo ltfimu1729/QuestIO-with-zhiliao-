@@ -1,52 +1,36 @@
-# GitHub Pagesにデプロイするためのシンプルなワークフロー
-name: Deploy Jekyll site to Pages
-
-on:
-  # mainブランチにプッシュされたときに実行
-  push:
-    branches: ["main"]
-
-  # Actionsタブから手動でワークフローを実行できるようにする
-  workflow_dispatch:
-
-# GITHUB_TOKENのパーミッションを設定し、GitHub Pagesへのデプロイを許可する
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# 1つのコンカレントなデプロイを許可し、古い実行をキャンセルする
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
-  # ビルドジョブ
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          source: './'
-          destination: './_site'
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Build
+        run: npm run build
+
+      # 👇 if条件を追加
       - name: Upload artifact
+        if: matrix.node-version == '20.x' # 特定のバージョン（例: 20.x）のジョブでのみ実行
         uses: actions/upload-pages-artifact@v3
         with:
-          # _siteフォルダをアップロードする
-          path: './_site'
+          path: './build'
 
-  # デプロイジョブ
   deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
