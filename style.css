@@ -185,7 +185,8 @@ body.gradient-off::before {
   align-items: center;
   gap: 5px;
   transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: col-resize;
+  cursor: col-resize; /* ← これを追加 */
+
 
   background: var(--sidebar-bg);
   backdrop-filter: blur(25px);
@@ -1610,7 +1611,7 @@ body.light-bg-base .sidebar-action-button:hover {
   align-items: center;
   justify-content: center;
   transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: col-resize;
+  cursor: col-resize; /* ← これを追加 */
 
   background-color: var(--sidebar-bg);
   backdrop-filter: blur(25px);
@@ -1785,6 +1786,7 @@ body.light-bg-base
   .conv-settings-menu-button {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
+
 
 body.is-resizing {
   user-select: none;
