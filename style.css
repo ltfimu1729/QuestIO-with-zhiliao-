@@ -531,6 +531,17 @@ body.gradient-off::before {
   filter: brightness(1.2);
 }
 .send-button:disabled {
+.stop-button {
+  background: hsla(0, 70%, 50%, 0.8);
+  color: white;
+}
+.stop-button:hover {
+  filter: brightness(1.2);
+}
+.stop-button:active {
+  transform: scale(0.95);
+}
+
   background: var(--glass-border);
   cursor: not-allowed;
 }

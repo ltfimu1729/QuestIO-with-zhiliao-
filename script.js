@@ -62,6 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
           importSuccess: "Import successful!",
           importError:
             "Import failed. Please check the file format or console for errors.",
+          stopGeneration: "Stop generation",
+          sendKey: "Send Key",
+          enterKey: "Enter",
+          shiftEnterKey: "Shift + Enter",
+          ctrlEnterKey: "Ctrl + Enter",
         },
         ja: {
           settings: "設定",
@@ -124,6 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
           importSuccess: "インポートに成功しました！",
           importError:
             "インポートに失敗しました。ファイル形式を確認するか、コンソールでエラーを確認してください。",
+          stopGeneration: "生成を停止",
+          sendKey: "送信キー",
+          enterKey: "Enter",
+          shiftEnterKey: "Shift + Enter",
+          ctrlEnterKey: "Ctrl + Enter",
         },
       };
 
@@ -140,6 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
         apiKey: "",
         isRecognizingSpeech: false,
         attachedFiles: [],
+        isGenerating: false,
+        abortController: null,
+        sendKey: "enter",
       };
 
       this.themePresets = {
@@ -159,6 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
       this.newChatButton = document.getElementById("newChatButton");
       this.inputBox = document.getElementById("inputBox");
       this.sendButton = document.getElementById("sendButton");
+      this.stopButton = document.getElementById("stopButton");
+      this.sendKeySelector = document.getElementById("sendKeySelector");
       this.settingsButton = document.getElementById("settingsButton");
       this.settingsModalBackdrop = document.getElementById(
         "settingsModalBackdrop"
@@ -232,6 +247,11 @@ document.addEventListener("DOMContentLoaded", () => {
       this.inputBox.addEventListener("keydown", (e) => this.handleKeyDown(e));
       this.inputBox.addEventListener("input", () => this.autoResizeInput());
       this.sendButton.addEventListener("click", () => this.sendMessage());
+      this.stopButton.addEventListener("click", () => this.stopGeneration());
+      this.sendKeySelector.addEventListener("change", (e) => {
+        this.state.sendKey = e.target.value;
+        this.saveStateToStorage();
+      });
       this.chatContainer.addEventListener("click", (e) =>
         this.handleChatAreaClick(e)
       );
@@ -496,6 +516,16 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector('label[for="languageSelector"]').textContent =
         t.language;
       document.querySelector('label[for="streamingToggle"]').textContent =
+      document.querySelector('label[for="sendKeySelector"]').textContent =
+        t.sendKey;
+      this.stopButton.title = t.stopGeneration;
+      // 送信キーの選択肢の翻訳
+      const sendKeyOptions = this.sendKeySelector.querySelectorAll("option");
+      if (sendKeyOptions.length >= 3) {
+        sendKeyOptions[0].textContent = t.enterKey;
+        sendKeyOptions[1].textContent = t.shiftEnterKey;
+        sendKeyOptions[2].textContent = t.ctrlEnterKey;
+      }
         t.streamingResponse;
       document.querySelectorAll(
         ".style-settings .settings-modal-title"
@@ -690,6 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentId: this.state.currentConversationId,
         language: this.languageSelector.value,
         streaming: this.streamingToggle.checked,
+        sendKey: this.state.sendKey,
         uiStyle: Array.from(document.body.classList).find((c) =>
           c.startsWith("style-")
         ),
@@ -716,6 +747,8 @@ document.addEventListener("DOMContentLoaded", () => {
           this.state.folders = storedState.folders || {};
           this.setLanguage(storedState.language || "ja", true);
           this.streamingToggle.checked = storedState.streaming ?? true;
+          this.state.sendKey = storedState.sendKey || "enter";
+          this.sendKeySelector.value = this.state.sendKey;
           this.state.conversations = storedState.conversations || {};
           if (storedState.uncategorizedOrder) {
             this.state.uncategorizedOrder = storedState.uncategorizedOrder;
@@ -1416,11 +1449,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     sendMessage() {
-      if (this.state.isEditing) return;
+      if (this.state.isEditing || this.state.isGenerating) return;
 
       const userText = this.inputBox.value.trim();
       const attachedFiles = [...this.state.attachedFiles];
       if (!userText && attachedFiles.length === 0) return;
+      // AI生成開始の状態管理
+      this.state.isGenerating = true;
+      this.state.abortController = new AbortController();
+      this.updateButtonStates();
 
       if (!this.titleContainer.classList.contains("conversation-started")) {
         this.titleContainer.classList.add("conversation-started");
@@ -1525,18 +1562,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     handleKeyDown(e) {
-      if (e.key === "Enter" && !e.shiftKey) {
+      const shouldSend = (
+        (this.state.sendKey === "enter" && e.key === "Enter" && !e.shiftKey && !e.ctrlKey) ||
+        (this.state.sendKey === "shift-enter" && e.key === "Enter" && e.shiftKey) ||
+        (this.state.sendKey === "ctrl-enter" && e.key === "Enter" && e.ctrlKey)
+      );
+      
+      if (shouldSend) {
         e.preventDefault();
         this.sendMessage();
+      }
+    }
+
+    stopGeneration() {
+      if (this.state.abortController) {
+        this.state.abortController.abort();
+        this.state.abortController = null;
+      }
+      this.state.isGenerating = false;
+      this.updateButtonStates();
+    }
+
+    updateButtonStates() {
+      if (this.state.isGenerating) {
+        this.sendButton.style.display = "none";
+        this.stopButton.style.display = "block";
+      } else {
+        this.sendButton.style.display = "block";
+        this.stopButton.style.display = "none";
+      this.updateButtonStates();
       }
     }
 
     autoResizeInput() {
       this.inputBox.style.height = "auto";
       this.inputBox.style.height = this.inputBox.scrollHeight + "px";
-      this.sendButton.disabled =
-        this.inputBox.value.trim().length === 0 &&
-        this.state.attachedFiles.length === 0;
+      this.updateButtonStates();
     }
 
     handleCopyCode(button) {
@@ -1953,6 +2014,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ...apiSettings,
             messages: messagesForApi,
             stream: isStreaming,
+          signal: this.state.abortController?.signal,
           }),
         });
 
@@ -2015,6 +2077,11 @@ document.addEventListener("DOMContentLoaded", () => {
         this.logMessage("assistant", errorHtml, aiMessageId);
         this.saveStateToStorage();
         if (loadingWrapper) loadingWrapper.innerHTML = errorHtml;
+      } finally {
+        // 生成完了時の状態リセット
+        this.state.isGenerating = false;
+        this.state.abortController = null;
+        this.updateButtonStates();
       }
     }
 
