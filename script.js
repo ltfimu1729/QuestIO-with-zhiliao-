@@ -2318,13 +2318,8 @@ initResizers() {
     });
   };
 
-  // ドラッグハンドルをハンバーガーメニューと設定ボタンに変更
   initResizer(this.hamburgerMenu, this.sidebar, "left");
   initResizer(this.convSettingsMenuButton, this.rightSidebar, "right");
-
-  // 元のクリックイベントリスナーを削除（initResizer内で処理するため）
-  // ただし、元のコードが複雑な場合があるので、単純なコメントアウトは危険。
-  // 今回のケースでは、`addEventListeners`内の該当箇所を削除する。
 }
 
     throttle(func, limit) {
@@ -2342,3 +2337,4 @@ initResizers() {
   }
   new QuestIO();
 });
+
